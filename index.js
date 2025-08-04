@@ -6,7 +6,14 @@ const admin = require('firebase-admin');
 require('dotenv').config();
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require('./firebase-service-account.json');
+const serviceAccountJson = Buffer.from(
+  process.env.FIREBASE_SERVICE_ACCOUNT_BASE64,
+  'base64'
+).toString('utf-8');
+
+// Parse thành object
+const serviceAccount = JSON.parse(serviceAccountJson);
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
