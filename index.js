@@ -36,7 +36,10 @@ const authenticateToken = async (req, res, next) => {
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.error('Error verifying token:', error);
+    // Only log errors in non-test environments to avoid test output noise
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('Error verifying token:', error);
+    }
     return res.status(403).json({ error: 'Invalid or expired token' });
   }
 };
@@ -97,6 +100,12 @@ app.get('/list-files', authenticateToken, async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
